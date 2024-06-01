@@ -556,7 +556,7 @@ end
 
 ***
 
-R2:
+R2 -  PcoreB:
 enable
 configure terminal
  hostname R2-PCoreB
@@ -706,13 +706,13 @@ config t
  ip cef
  mpls ip
   int Ethernet1/1
-_____________
-_____________
-_____________
+    mpls ip
+    mpls label protocol ldp
+    !mpls mtu override 1512
   int Ethernet1/2
-_____________
-_____________
-_____________
+    mpls ip
+    mpls label protocol ldp
+    !mpls mtu override 1512 
 ****
 ***
 R2:P:
@@ -724,18 +724,18 @@ config t
     mpls label protocol ldp
     !mpls mtu override 1512
   int Ethernet1/2
-_____________
-_____________
-_____________
+    mpls ip
+    mpls label protocol ldp
+    !mpls mtu override 1512 
 ****
 R1-1:PEz
 config t
  ip cef
  mpls ip
   int Ethernet1/0
-_____________
-_____________
-_____________
+    mpls ip
+    mpls label protocol ldp
+    !mpls mtu override 1512 
 
 How to check:
 R2P#show mpls ldp neighbor (lib)
@@ -859,6 +859,7 @@ config t
   ip vrf forwarding clientPNBb
   ip address 10.1.1.6 255.255.255.252
   no shut
+end
 
 R1-PEz#bp
 Interface                  IP-Address      OK? Method Status                Protocol
@@ -950,7 +951,6 @@ STEP6: ROUTE REDISTRIBUTIONS:
 
 RIP - mBGP-RIP/EIGRP-mBGP -EIGRP/OSPF - mBGP -OSPF/
 
-
 7.2:EIGRP-mBGP -EIGRP
 
 R4:PEa
@@ -971,15 +971,16 @@ config t
 R1:PEz
 config t
  router bgp 64999
-  address-family ipv4 vrf clientPNBb
+  address-family ipv4 vrf clientPNBa
   redistribute eigrp 90 metric 1
   exit
  router eigrp 90
-  address-family ipv4 vrf clientPNBb
+  address-family ipv4 vrf clientPNBa
    autonomous-system 90
    network 10.0.0.0
    no auto-summary
    redistribute bgp 64999 metric 100000 10 1 255 1512
+   !seed metric,sh int fa1/2      bw  de/10 load rely mtu
    exit-address-family
 
 
